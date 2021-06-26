@@ -1,0 +1,134 @@
+<script>
+    // spinner function to produce randomness - numerator is number of true options out of the total denominator
+    function spinner(numerator, denominator){
+    
+       var options = [];
+       
+       // add true options to list
+       for(var i = 0; i < numerator; i++){
+          
+           options.push(true);
+           
+       }
+       
+       // add false options to list
+       for(var i = 0; i < denominator-numerator; i++){
+          
+           options.push(false);
+           
+       }
+       
+       return options[random(0,options.length-1)];
+    
+    }
+    
+    // random integer between and including min and max
+	function random(min, max) {
+         return Math.floor(Math.random() * (max - min + 1) ) + min;
+    } 
+    
+    // random non-zero integer bewteen min and max
+    function non_zero_random(min, max) {
+         
+         var output;
+         
+         do{output = Math.floor(Math.random() * (max - min + 1) ) + min;} while (output === 0);
+         
+         return output;
+    } 
+    
+    function gcd(x, y) {
+  if ((typeof x !== 'number') || (typeof y !== 'number')) 
+    return false;
+  x = Math.abs(x);
+  y = Math.abs(y);
+  while(y) {
+    var t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+
+    // removes all double signs
+    function clean(string){
+
+       return string.replaceAll("-+", "-").replaceAll("- +", "-").replaceAll("+ -", "-").replaceAll("- -", "+").replaceAll("+-", "-").replaceAll("-- ", "+");
+    }
+String.prototype.replaceAll = function(searchStr, replaceStr) {
+	var str = this;
+
+    // no match exists in string?
+    if(str.indexOf(searchStr) === -1) {
+        // return string
+        return str;
+    }
+
+    // replace and remove first match, and do another recursirve search/replace
+    return (str.replace(searchStr, replaceStr)).replaceAll(searchStr, replaceStr);
+}
+
+    // simplify fraction
+    function simplifyFrac(num, denom){
+     
+     // format the i better, at the end to the right of all fractions
+     var imaginary = "";
+     if(num.toString().includes("i")){
+      
+       num = num.toString().split("i")[0];
+       imaginary = "i";
+     
+     }
+     
+     // format the negative better so that it isn't in a fraction
+     var neg = "";
+     if((num/denom) < 0){
+        
+        num = Math.abs(num);
+        denom = Math.abs(denom);
+        neg = "-";
+        
+     }
+
+     // no sqrt in numerator
+     if(!num.toString().includes("sqrt")){
+       // if integer, return integer
+       if((num % denom) === 0){
+       
+         return neg+num/denom+imaginary;
+         
+       }
+       // otherwise, return fraction in simplest form
+       else{
+            var g = gcd(num,denom);
+            return neg+"\\frac{"+(num/g)+"}{"+(denom/g)+"}"+imaginary;
+        }
+
+      }
+      // includes square root
+      else{
+        // grab the number in front of the square root 
+        var number = parseInt(num.split("\\sqrt")[0]);
+        var output ="";
+        var g = 1;
+        
+        if(Number.isInteger(number)){
+        
+          g = gcd(number,denom);
+          
+          if((number/g)!= 1){ output+=(number/g);}
+
+        }
+        
+        if((number % denom) === 0){
+        
+            output +="\\sqrt{"+num.split("\\sqrt{")[1];
+        }
+        else{
+            output = "\\frac{"+output+"\\sqrt{"+num.split("\\sqrt{")[1]+"}{"+(denom/g)+"}";
+        }
+        return neg+output+imaginary;
+        
+      }
+    }
+</script>

@@ -1,0 +1,569 @@
+<script>
+
+	$(document).ready(function() {
+    
+    $('.changeItem').change(function(){
+        $('#generate').click();
+    });
+
+    $(document).keypress(function (e) {
+        var key = e.which;
+         if(key == 13)  // the enter key code
+         {
+            $('#generate').click();
+             return false;  
+          }
+    });
+    
+    $('#video-button').hide();
+    
+    var testing = false;
+    $('#generate').click(function(){
+        if(!testing){$("#answer").hide(); $("#show-answer").val("Show Answer");}
+        
+        // default option is real answers only
+        var complex = false;
+        
+        // otherwise allow complext
+        if($("#reals-toggle").is(':checked')){   complex = true; }
+        
+        // default option is set equal to 0
+        var zero = true;
+        
+        // otherwise allow mix up of equation
+        if($("#zero-toggle").is(':checked')){   zero = false; }
+        
+        
+        generate(parseInt($("#type").val()),complex,zero);   
+        
+     });
+
+
+    $("#show-answer").click(function(){
+       if($("#answer").is(":hidden") ){
+          $("#answer").show();
+          $("#show-answer").val("Hide Answer");
+       } else{
+         $("#answer").hide();
+         $("#show-answer").val("Show Answer");
+        }
+    });
+    
+    if(testing){ $("#answer").show();}
+    
+    $('#reals').prop('checked', true);
+    
+    $("#reals").click(function(){
+        if($(this).is(':checked')){
+            reals = true;
+        } else {
+            reals = false;
+        }
+    });
+    
+    $('#zero').prop('checked', true);
+    
+    $("#zero").click(function(){
+        if($(this).is(':checked')){
+            zero = true;
+        } else {
+            zero = false;
+        }
+    });
+    
+	});
+	function generate(type,complex,zero){
+       
+       var answer = "";
+       
+       // Any Method
+        if(type == 0){
+                      
+           // reset type to be any of the other methods
+           type = random(1,6);
+           
+           var n = ["Factoring out the GCF", "Factoring Trinomials A = 1", "Factoring Trinomials A not 1", "Square Roots","Completing the Square","Quadratic Formula"];           
+           answer = n[type-1]+"<br>";                        
+        
+        } 
+       
+       var videoLinks = ["https://www.youtube.com/watch?v=DV0PQU2jRfo",
+                         "https://www.youtube.com/watch?v=XNvOGRqHJzI",
+                         "https://www.youtube.com/watch?v=ou2G6trDyls",
+                         "https://www.youtube.com/watch?v=FkRq4PL9yKo",
+                         "https://www.youtube.com/watch?v=yBW2mKcFMJU",
+                         "https://www.youtube.com/watch?v=KhJNjha3_E8"];
+       
+       if(videoLinks[type-1].length != 0){ 
+         $("#videoLink"). attr("href", videoLinks[type-1]);
+         $('#video-button').show();
+       }
+       else{
+         $('#video-button').hide();
+       }     
+      
+       var output = "";       
+       var answer1 = "";
+       var answer2 = "";
+       var a,b,c,d,e,f,g,h,i,j,k,l;
+       $("#generatedoutput").html("");
+       $("#answer").html("");
+                    
+          switch(type){
+          // Factoring GCF
+           case 1:  
+           
+           b = random(2,10);
+           c = random(2,7);
+           a = b*c;
+                          
+           d = gcd(a,b);
+           
+           // positive or negative
+           switch(random(0,1)){
+              
+              // positive
+              case 0:
+              output = scrambleQuad(a,b,0,zero);
+              answer += "\\("+d+"x("+(a/d)+"x + "+(b/d)+") = 0\\) <br> \\( \\Big\\{0, -\\frac{"+(b/d)+"}{"+(a/d)+"} \\Big\\}\\)";
+              break;
+              
+              // negative
+              case 1:
+              output = scrambleQuad(a,-1*b,0,zero);
+              answer += "\\("+d+"x("+(a/d)+"x - "+(b/d)+") = 0\\) <br> \\( \\Big\\{0, \\frac{"+(b/d)+"}{"+(a/d)+"} \\Big\\}\\)";
+              break;
+              
+          }
+           
+           break;
+           
+           // Factoring Trinomials A = 1
+           case 2:
+             
+              b = non_zero_random(-10,10);
+              d = non_zero_random(-10,10);
+              
+              output = scrambleQuad(1,b+d,b*d,zero);
+              answer += "\\((x + "+b+")(x + "+d+") = 0\\) <br> \\( \\Big\\{"+-1*b;
+              if(b != d){answer += ", "+-1*d;} 
+              answer += " \\Big\\}\\)";
+              
+              answer = clean(answer); 
+              break;  
+             
+           break;
+		   
+           // Factoring Trinomials A not 1
+           case 3: 
+              a = non_zero_random(2,5);
+              b = non_zero_random(-10,10);
+              c = non_zero_random(2,5);
+              d = non_zero_random(-10,10);
+              
+              var root1 =""; var root2= "";
+
+              output = scrambleQuad(a*c,b*c+d*a,b*d,zero);
+              answer1 = "\\(("+a+"x + "+b+")("+c+"x + "+d+") = 0\\)";
+             
+              f = gcd(a,b);
+              g = gcd(c,d);
+              
+              if((g*f)!= 1){
+              
+              answer2 = g*f;
+              
+              if(f == 1){
+                 answer2 += "("+a+"x + "+b+")";
+              } else {
+                answer2 += "("+a/f+"x + "+b/f+")";
+              }
+              
+              if(g == 1){
+                answer2 +="("+c+"x + "+d+")";
+              } else {
+                answer2 +="("+c/g+"x + "+d/g+")";
+              }
+              
+              answer2 = "<br>\\("+clean(answer2)+"= 0 \\leftarrow\\) Factored Completely";
+              
+              }
+              
+              if(Number.isInteger(-b/a)){root1 = -b/a;} 
+              else{
+              
+                 if((-b/a)<0){
+                 
+                    root1 = "-";
+                 
+                 } 
+                 
+                 root1 += "\\frac{"+Math.abs(b/f)+"}{"+Math.abs(a/f)+"}"
+              
+              }
+              
+              if(Number.isInteger(-d/c)){root2 = -d/c;} 
+              else{
+              
+                 if((-d/c)<0){
+                 
+                    root2 = "-";
+                 
+                 } 
+                 
+                 root2 += "\\frac{"+Math.abs(d/g)+"}{"+Math.abs(c/g)+"}"
+              
+              }
+              
+              answer += answer1 + answer2 + "<br>\\( \\Big\\{"+root1;
+              
+              if(root2!=root1){
+                answer += ", "+root2;
+              }
+              answer+=" \\Big\\}\\)";
+              answer = clean(answer);
+           break;
+		   
+           
+           // Square Roots
+           case 4: 
+           
+           a = random(2,10);
+           b = a*-1;
+           c = non_zero_random(-10,10);
+           d = non_zero_random(-10,10); 
+           e = a*a;
+           
+           output = scrambleQuad(c,0,-1*c*e,zero);                     
+           answer += "\\(\\Big\\{"+b+", "+a+"\\Big\\}\\)"
+           
+           break;
+           
+           // Completing the Square
+           case 5:
+           
+           if(complex != true){
+              do{
+                h = non_zero_random(-10,10);
+                a = h*2;
+                b = non_zero_random(-10,10);
+                k = b-h**2; 
+              } while (k > 0);
+           }
+           else{
+             h = non_zero_random(-10,10);
+             a = h*2;
+             b = non_zero_random(-10,10);
+             k = b-h**2
+           }
+
+           output = scrambleQuad(1,a,b,zero);
+           answer += "\\((x + "+h+")^2 + "+k+"= 0 \\leftarrow\\) Vertex Form. Vertex is \\(("+(-h)+", "+k+")\\)<br>\\(\\Big\\{ ";
+           
+           if(!Number.isInteger(Math.sqrt(-k)) && !Number.isInteger(Math.sqrt(k))){
+           
+           answer += (-h)+" \\pm "+simplifyRad(-k);
+           
+           } else{
+              if(Number.isInteger(Math.sqrt(-k))) {
+                  
+                  if(k != 0){
+                    answer += ((-h)+Math.sqrt(-k))+", "+((-h)-Math.sqrt(-k))+"";
+                  } else{
+                    answer += (-h)+"";
+                  }
+              }
+              else{
+              
+                 answer += (-h)+" \\pm "+Math.sqrt(k)+"i";
+              
+              }
+              
+           }
+           answer += "\\Big\\}\\)"
+           answer = clean(answer);
+           
+		   break;
+           
+           // Quadratic Formula
+           case 6: 
+           
+           // if only reals are selected, generate a,b,c until it is not imaginary
+           if(complex != true){
+            do{
+                a = random(2,10); 
+                b = non_zero_random(-10,10); 
+                c = non_zero_random(-15,15); 
+                d = b**2-4*a*c;
+              } while(d < 0);
+           } else{
+               a = random(2,10); 
+               b = non_zero_random(-10,10); 
+               c = non_zero_random(-15,15); 
+               d = b**2-4*a*c;
+           }
+           
+           output = scrambleQuad(a,b,c,zero);
+           
+           answer += "\\(x = \\cfrac{-("+b+")\\pm \\sqrt{("+b+")^2-4("+a+")("+c+")}}{2("+a+")}\\)<br>";
+           
+           // double-root
+           if(d === 0){
+           
+              answer += "\\(\\Big\\{"+(-b/(2*a))+"\\Big\\}\\)";
+           
+           } 
+           // not a perfect square root
+           else if(!Number.isInteger(Math.sqrt(-d)) && !Number.isInteger(Math.sqrt(d))){
+       
+              answer += "\\(\\Big\\{"+simplifyFrac(-b,2*a)+" \\pm "+simplifyFrac(simplifyRad(d),2*a)+"\\Big\\}\\)";
+              
+           } 
+           // perfect square root
+           else{
+           
+              // real
+              if(Number.isInteger(Math.sqrt(d))){
+              
+                 answer += "\\(\\Big\\{"+simplifyFrac(-b+Math.sqrt(d),2*a)+", "+simplifyFrac(-b-Math.sqrt(d),2*a)+"\\Big\\}\\)"; 
+              
+              } 
+              
+              // imaginary
+              else{
+              
+                 var imag = Math.sqrt(-d);
+                 answer += "\\(\\Big\\{"+simplifyFrac(-b,2*a)+"\\pm "+simplifyFrac(imag,2*a)+"i\\Big\\}\\)"; 
+              }        
+           }
+
+           break;          
+       
+         }
+             
+       
+       $("#generatedoutput").html("\\("+clean(output)+"\\)");
+       $("#answer").html(answer);
+       renderMathInElement(document.body);
+       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"generatedoutput"]);
+       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"answer"]);
+	}
+
+    // simplify radical
+    function simplifyRad(radicand){
+    
+           var isqr = Math.floor(Math.sqrt(Math.abs(radicand)));
+           var isqr2 = isqr**2;
+           var front = "";
+           var inside = radicand;
+           
+           while(isqr2 > 1){
+           
+             if((inside % isqr2) === 0){
+
+                front = isqr;
+                inside = inside/isqr2;
+                
+                break;
+             }
+             
+             isqr--;
+             isqr2 = isqr**2;
+           
+           }
+    
+       if(radicand < 0){
+         return front+"\\sqrt{"+(-inside)+"}i";
+       } else{
+         return front+"\\sqrt{"+inside+"}";
+       }
+    }
+    
+    // function to randomize the sides of the equation
+    function equationSwap(left,right){
+        
+        var output = "";
+        
+        switch(random(0,1)){
+           
+           case 0:
+           output = left+" = "+right;
+
+           break;
+           
+           case 1:
+           output = right+" = "+left;
+           break;
+        
+        }
+        
+        return output;
+    }
+    
+    // function to rearrange the pieces of a polynomial
+    function mix(termArray){
+       
+       var output = "";
+       
+       if(termArray.length == 0){
+            
+            output = "0";
+            
+       }
+       else{
+       
+          var terms = shuffle(termArray);
+          
+          output = terms[0];
+          
+          for(var i = 1; i < terms.length; i++){
+              
+              output += " + "+terms[i];
+          
+          }
+          
+       }
+       
+       return output;
+    }
+    
+    function shuffle(array) {
+       array.sort(() => Math.random() - 0.5);
+       return array;
+    }
+    
+    // function to "scramble" the quadratic equation so that it isn't always ax^2 + bx + c = 0
+    function scrambleQuad(a,b,c,zero){
+       
+       var output = "";
+       
+       // if the slider is set to always be equal to zero, return that format
+       if(zero){
+          
+          if(a != 1){ output += a; }
+          output += "x^2";
+          
+          if(b != 0){ output += " + "+b+"x"; }
+          
+          if(c != 0){ output += " + "+c; }
+          
+          output += " = 0";
+          
+       }
+       
+       // if the slider is NOT set to always be equal to zero, scramble
+       else{
+            var left = { "a": a, "b": b, "c": c };
+            var right = { "a": 0, "b": 0, "c": 0 };
+            
+            // scramble 1: Add a constant to both sides [1/3 of the time perform this scramble]
+            if(spinner(2,5)){ 
+            
+               var scram1 = scramble1(left,right);
+               left = scram1[0]; right = scram1[1];
+            
+            }
+           
+            // scramble 2: Add an x term to both sides
+            if(spinner(2,5)){ 
+            
+              var scram2 = scramble2(left,right);
+              left = scram2[0]; right = scram2[1];
+              
+            }
+            
+            // scramble 3: Add an x^2 term to both sides
+            if(spinner(2,5)){ 
+            
+              var scram3 = scramble3(left,right);
+              left = scram3[0]; right = scram3[1];
+              
+            }
+            
+            // scramble 4: Make the whole thing negative 
+            if(spinner(2,5)){ 
+            
+              var scram4 = scramble4(left,right);
+              left = scram4[0]; right = scram4[1];
+              
+            }
+            
+            // left side
+            var leftSide = [];
+            
+            // build the output
+            if(left.a != 0){ if(left.a != 1){ leftSide.push(left.a+"x^2"); } else{  leftSide.push("x^2"); }; }
+            
+            if(left.b != 0){ leftSide.push(left.b+"x"); }
+          
+            if(left.c != 0){ leftSide.push(left.c); }
+          
+            // right side
+            var rightSide = [];
+            
+            // build the output
+            if(right.a != 0){ if(right.a != 1){ rightSide.push(right.a+"x^2"); } else{  rightSide.push("x^2"); }; }
+            
+            if(right.b != 0){ rightSide.push(right.b+"x"); }
+          
+            if(right.c != 0){ rightSide.push(right.c); }
+            
+            output = equationSwap(mix(leftSide),mix(rightSide));
+            
+       }
+       
+       return output;
+       
+    }
+    
+    // helper function to scramble by adding a constant to both sides
+    function scramble1(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        var change = non_zero_random(-10,10);
+        left.c += change;
+        right.c += change;
+        
+        return [left,right];
+
+    }
+    
+    // helper function to scramble by adding an x term to both sides
+    function scramble2(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        var change = non_zero_random(-10,10);
+        left.b += change;
+        right.b += change;
+        
+        return [left,right];
+
+    }
+    
+    // helper function to scramble by adding an x^2 term to both sides
+    function scramble3(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        var change = non_zero_random(-10,10);
+        left.a += change;
+        right.a += change;
+        
+        return [left,right];
+
+    }
+    
+    // helper function to scramble by multiplying both sides by -1
+    function scramble4(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        left.a = left.a*-1; left.b = left.b*-1; left.c = left.c*-1;
+        right.a = right.a*-1; right.b = right.b*-1; right.c = right.c*-1;
+        
+        return [left,right];
+
+    }
+</script>
