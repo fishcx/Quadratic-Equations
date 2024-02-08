@@ -80,16 +80,15 @@
         if(type == 0){
                       
            // reset type to be any of the other methods
-           type = random(1,6);
+           type = random(1,5);
            
-           var n = ["Factoring out the GCF", "Factoring Trinomials A = 1", "Factoring Trinomials A not 1", "Square Roots","Completing the Square","Quadratic Formula"];           
+           var n = ["Factoring out the GCF", "Factoring Trinomials A = 1", "Square Roots","Completing the Square","Quadratic Formula"];           
            answer = n[type-1]+"<br>";                        
         
         } 
        
        var videoLinks = ["https://www.youtube.com/watch?v=DV0PQU2jRfo",
                          "https://www.youtube.com/watch?v=XNvOGRqHJzI",
-                         "https://www.youtube.com/watch?v=ou2G6trDyls",
                          "https://www.youtube.com/watch?v=FkRq4PL9yKo",
                          "https://www.youtube.com/watch?v=yBW2mKcFMJU",
                          "https://www.youtube.com/watch?v=KhJNjha3_E8"];
@@ -154,6 +153,121 @@
              
            break;
 		   
+           // Square Roots
+           case 3: 
+           
+           a = random(2,10);
+           b = a*-1;
+           c = non_zero_random(-10,10);
+           d = non_zero_random(-10,10); 
+           e = a*a;
+           
+           output = scrambleQuad(c,0,-1*c*e,zero);                     
+           answer += "\\(\\Big\\{"+b+", "+a+"\\Big\\}\\)"
+           
+           break;
+           
+           // Completing the Square
+           case 4:
+           
+           if(complex != true){
+              do{
+                h = non_zero_random(-10,10);
+                a = h*2;
+                b = non_zero_random(-10,10);
+                k = b-h**2; 
+              } while (k > 0);
+           }
+           else{
+             h = non_zero_random(-10,10);
+             a = h*2;
+             b = non_zero_random(-10,10);
+             k = b-h**2
+           }
+
+           output = scrambleQuad(1,a,b,zero);
+           //answer += "\\((x + "+h+")^2 + "+k+"= 0 \\leftarrow\\) Vertex Form. Vertex is \\(("+(-h)+", "+k+")\\)<br>\\(\\Big\\{ ";
+           answer += "\\(\\Big\\{ ";
+           if(!Number.isInteger(Math.sqrt(-k)) && !Number.isInteger(Math.sqrt(k))){
+           
+           answer += (-h)+" \\pm "+simplifyRad(-k);
+           
+           } else{
+              if(Number.isInteger(Math.sqrt(-k))) {
+                  
+                  if(k != 0){
+                    answer += ((-h)+Math.sqrt(-k))+", "+((-h)-Math.sqrt(-k))+"";
+                  } else{
+                    answer += (-h)+"";
+                  }
+              }
+              else{
+              
+                 answer += (-h)+" \\pm "+Math.sqrt(k)+"i";
+              
+              }
+              
+           }
+           answer += "\\Big\\}\\)"
+           answer = clean(answer);
+           
+		   break;
+           
+           // Quadratic Formula
+           case 5: 
+           
+           // if only reals are selected, generate a,b,c until it is not imaginary
+           if(complex != true){
+            do{
+                a = random(2,10); 
+                b = non_zero_random(-10,10); 
+                c = non_zero_random(-15,15); 
+                d = b**2-4*a*c;
+              } while(d < 0);
+           } else{
+               a = random(2,10); 
+               b = non_zero_random(-10,10); 
+               c = non_zero_random(-15,15); 
+               d = b**2-4*a*c;
+           }
+           
+           output = scrambleQuad(a,b,c,zero);
+           
+           answer += "\\(x = \\cfrac{-("+b+")\\pm \\sqrt{("+b+")^2-4("+a+")("+c+")}}{2("+a+")}\\)<br>";
+           
+           // double-root
+           if(d === 0){
+           
+              answer += "\\(\\Big\\{"+(-b/(2*a))+"\\Big\\}\\)";
+           
+           } 
+           // not a perfect square root
+           else if(!Number.isInteger(Math.sqrt(-d)) && !Number.isInteger(Math.sqrt(d))){
+       
+              answer += "\\(\\Big\\{"+simplifyFrac(-b,2*a)+" \\pm "+simplifyFrac(simplifyRad(d),2*a)+"\\Big\\}\\)";
+              
+           } 
+           // perfect square root
+           else{
+           
+              // real
+              if(Number.isInteger(Math.sqrt(d))){
+              
+                 answer += "\\(\\Big\\{"+simplifyFrac(-b+Math.sqrt(d),2*a)+", "+simplifyFrac(-b-Math.sqrt(d),2*a)+"\\Big\\}\\)"; 
+              
+              } 
+              
+              // imaginary
+              else{
+              
+                 var imag = Math.sqrt(-d);
+                 answer += "\\(\\Big\\{"+simplifyFrac(-b,2*a)+"\\pm "+simplifyFrac(imag,2*a)+"i\\Big\\}\\)"; 
+              }        
+           }
+
+           break;  
+
+          /** taken out with next gen standards
            // Factoring Trinomials A not 1
            case 3: 
               a = non_zero_random(2,5);
@@ -223,121 +337,7 @@
               answer+=" \\Big\\}\\)";
               answer = clean(answer);
            break;
-		   
-           
-           // Square Roots
-           case 4: 
-           
-           a = random(2,10);
-           b = a*-1;
-           c = non_zero_random(-10,10);
-           d = non_zero_random(-10,10); 
-           e = a*a;
-           
-           output = scrambleQuad(c,0,-1*c*e,zero);                     
-           answer += "\\(\\Big\\{"+b+", "+a+"\\Big\\}\\)"
-           
-           break;
-           
-           // Completing the Square
-           case 5:
-           
-           if(complex != true){
-              do{
-                h = non_zero_random(-10,10);
-                a = h*2;
-                b = non_zero_random(-10,10);
-                k = b-h**2; 
-              } while (k > 0);
-           }
-           else{
-             h = non_zero_random(-10,10);
-             a = h*2;
-             b = non_zero_random(-10,10);
-             k = b-h**2
-           }
-
-           output = scrambleQuad(1,a,b,zero);
-           answer += "\\((x + "+h+")^2 + "+k+"= 0 \\leftarrow\\) Vertex Form. Vertex is \\(("+(-h)+", "+k+")\\)<br>\\(\\Big\\{ ";
-           
-           if(!Number.isInteger(Math.sqrt(-k)) && !Number.isInteger(Math.sqrt(k))){
-           
-           answer += (-h)+" \\pm "+simplifyRad(-k);
-           
-           } else{
-              if(Number.isInteger(Math.sqrt(-k))) {
-                  
-                  if(k != 0){
-                    answer += ((-h)+Math.sqrt(-k))+", "+((-h)-Math.sqrt(-k))+"";
-                  } else{
-                    answer += (-h)+"";
-                  }
-              }
-              else{
-              
-                 answer += (-h)+" \\pm "+Math.sqrt(k)+"i";
-              
-              }
-              
-           }
-           answer += "\\Big\\}\\)"
-           answer = clean(answer);
-           
-		   break;
-           
-           // Quadratic Formula
-           case 6: 
-           
-           // if only reals are selected, generate a,b,c until it is not imaginary
-           if(complex != true){
-            do{
-                a = random(2,10); 
-                b = non_zero_random(-10,10); 
-                c = non_zero_random(-15,15); 
-                d = b**2-4*a*c;
-              } while(d < 0);
-           } else{
-               a = random(2,10); 
-               b = non_zero_random(-10,10); 
-               c = non_zero_random(-15,15); 
-               d = b**2-4*a*c;
-           }
-           
-           output = scrambleQuad(a,b,c,zero);
-           
-           answer += "\\(x = \\cfrac{-("+b+")\\pm \\sqrt{("+b+")^2-4("+a+")("+c+")}}{2("+a+")}\\)<br>";
-           
-           // double-root
-           if(d === 0){
-           
-              answer += "\\(\\Big\\{"+(-b/(2*a))+"\\Big\\}\\)";
-           
-           } 
-           // not a perfect square root
-           else if(!Number.isInteger(Math.sqrt(-d)) && !Number.isInteger(Math.sqrt(d))){
-       
-              answer += "\\(\\Big\\{"+simplifyFrac(-b,2*a)+" \\pm "+simplifyFrac(simplifyRad(d),2*a)+"\\Big\\}\\)";
-              
-           } 
-           // perfect square root
-           else{
-           
-              // real
-              if(Number.isInteger(Math.sqrt(d))){
-              
-                 answer += "\\(\\Big\\{"+simplifyFrac(-b+Math.sqrt(d),2*a)+", "+simplifyFrac(-b-Math.sqrt(d),2*a)+"\\Big\\}\\)"; 
-              
-              } 
-              
-              // imaginary
-              else{
-              
-                 var imag = Math.sqrt(-d);
-                 answer += "\\(\\Big\\{"+simplifyFrac(-b,2*a)+"\\pm "+simplifyFrac(imag,2*a)+"i\\Big\\}\\)"; 
-              }        
-           }
-
-           break;          
+           */        
        
          }
              
