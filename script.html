@@ -75,7 +75,8 @@
 	function generate(type,complex,zero){
        
        var answer = "";
-       
+       var var1 = pickVar();
+
        // Any Method
         if(type == 0){
                       
@@ -123,14 +124,14 @@
               
               // positive
               case 0:
-              output = scrambleQuad(a,b,0,zero);
-              answer += "\\("+d+"x("+(a/d)+"x + "+(b/d)+") = 0\\) <br> \\( \\Big\\{0, -\\frac{"+(b/d)+"}{"+(a/d)+"} \\Big\\}\\)";
+              output = scrambleQuad(a,b,0,zero,var1);
+              answer += "\\("+d+var1+"("+(a/d)+var1+" + "+(b/d)+") = 0\\) <br> \\( \\Big\\{0, -\\frac{"+(b/d)+"}{"+(a/d)+"} \\Big\\}\\)";
               break;
               
               // negative
               case 1:
-              output = scrambleQuad(a,-1*b,0,zero);
-              answer += "\\("+d+"x("+(a/d)+"x - "+(b/d)+") = 0\\) <br> \\( \\Big\\{0, \\frac{"+(b/d)+"}{"+(a/d)+"} \\Big\\}\\)";
+              output = scrambleQuad(a,-1*b,0,zero,var1);
+              answer += "\\("+d+var1+"("+(a/d)+var1+" - "+(b/d)+") = 0\\) <br> \\( \\Big\\{0, \\frac{"+(b/d)+"}{"+(a/d)+"} \\Big\\}\\)";
               break;
               
           }
@@ -143,8 +144,8 @@
               b = non_zero_random(-10,10);
               d = non_zero_random(-10,10);
               
-              output = scrambleQuad(1,b+d,b*d,zero);
-              answer += "\\((x + "+b+")(x + "+d+") = 0\\) <br> \\( \\Big\\{"+-1*b;
+              output = scrambleQuad(1,b+d,b*d,zero,var1);
+              answer += "\\(("+var1+" + "+b+")("+var1+" + "+d+") = 0\\) <br> \\( \\Big\\{"+-1*b;
               if(b != d){answer += ", "+-1*d;} 
               answer += " \\Big\\}\\)";
               
@@ -162,7 +163,7 @@
            d = non_zero_random(-10,10); 
            e = a*a;
            
-           output = scrambleQuad(c,0,-1*c*e,zero);                     
+           output = scrambleQuad(c,0,-1*c*e,zero,var1);                     
            answer += "\\(\\Big\\{"+b+", "+a+"\\Big\\}\\)"
            
            break;
@@ -185,7 +186,7 @@
              k = b-h**2
            }
 
-           output = scrambleQuad(1,a,b,zero);
+           output = scrambleQuad(1,a,b,zero,var1);
            //answer += "\\((x + "+h+")^2 + "+k+"= 0 \\leftarrow\\) Vertex Form. Vertex is \\(("+(-h)+", "+k+")\\)<br>\\(\\Big\\{ ";
            answer += "\\(\\Big\\{ ";
            if(!Number.isInteger(Math.sqrt(-k)) && !Number.isInteger(Math.sqrt(k))){
@@ -231,9 +232,9 @@
                d = b**2-4*a*c;
            }
            
-           output = scrambleQuad(a,b,c,zero);
+           output = scrambleQuad(a,b,c,zero,var1);
            
-           answer += "\\(x = \\cfrac{-("+b+")\\pm \\sqrt{("+b+")^2-4("+a+")("+c+")}}{2("+a+")}\\)<br>";
+           answer += "\\("+var1+" = \\cfrac{-("+b+")\\pm \\sqrt{("+b+")^2-4("+a+")("+c+")}}{2("+a+")}\\)<br>";
            
            // double-root
            if(d === 0){
@@ -433,7 +434,7 @@
     }
     
     // function to "scramble" the quadratic equation so that it isn't always ax^2 + bx + c = 0
-    function scrambleQuad(a,b,c,zero){
+    function scrambleQuad(a,b,c,zero,variable){
        
        var output = "";
        
@@ -441,9 +442,9 @@
        if(zero){
           
           if(a != 1){ output += a; }
-          output += "x^2";
+          output += variable+"^2";
           
-          if(b != 0){ output += " + "+b+"x"; }
+          if(b != 0){ output += " + "+b+variable; }
           
           if(c != 0){ output += " + "+c; }
           
@@ -492,9 +493,9 @@
             var leftSide = [];
             
             // build the output
-            if(left.a != 0){ if(left.a != 1){ leftSide.push(left.a+"x^2"); } else{  leftSide.push("x^2"); }; }
+            if(left.a != 0){ if(left.a != 1){ leftSide.push(left.a+variable+"^2"); } else{  leftSide.push(variable+"^2"); }; }
             
-            if(left.b != 0){ leftSide.push(left.b+"x"); }
+            if(left.b != 0){ leftSide.push(left.b+variable); }
           
             if(left.c != 0){ leftSide.push(left.c); }
           
@@ -502,9 +503,9 @@
             var rightSide = [];
             
             // build the output
-            if(right.a != 0){ if(right.a != 1){ rightSide.push(right.a+"x^2"); } else{  rightSide.push("x^2"); }; }
+            if(right.a != 0){ if(right.a != 1){ rightSide.push(right.a+variable+"^2"); } else{  rightSide.push(variable+"^2"); }; }
             
-            if(right.b != 0){ rightSide.push(right.b+"x"); }
+            if(right.b != 0){ rightSide.push(right.b+variable); }
           
             if(right.c != 0){ rightSide.push(right.c); }
             
@@ -566,4 +567,12 @@
         return [left,right];
 
     }
+
+    function pickVar() {
+      var result           = '';
+      var characters       = 'abcdfghjkmnpqrvwxyz';
+      var charactersLength = characters.length;
+      return characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
 </script>
