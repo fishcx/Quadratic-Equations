@@ -81,9 +81,9 @@
         if(type == 0){
                       
            // reset type to be any of the other methods
-           type = random(1,5);
+           type = random(1,7);
            
-           var n = ["Factoring out the GCF", "Factoring Trinomials", "Square Roots","Completing the Square","Quadratic Formula"];           
+           var n = ["Factoring out the GCF", "Factoring Trinomials", "Square Roots","Completing the Square","Quadratic Formula","Factoring Completely","Factoring 4th Degree"];           
            answer = n[type-1]+"<br>";                        
         
         } 
@@ -92,7 +92,9 @@
                          "https://www.youtube.com/watch?v=XNvOGRqHJzI",
                          "https://www.youtube.com/watch?v=FkRq4PL9yKo",
                          "https://www.youtube.com/watch?v=yBW2mKcFMJU",
-                         "https://www.youtube.com/watch?v=KhJNjha3_E8"];
+                         "https://www.youtube.com/watch?v=KhJNjha3_E8",
+                         "",
+                         ""];
        
        if(videoLinks[type-1].length != 0){ 
          $("#videoLink"). attr("href", videoLinks[type-1]);
@@ -313,6 +315,84 @@
            }
 
            break;  
+
+          // Factoring Completely
+          case 6:
+
+            b = non_zero_random(-10,10);
+            d = non_zero_random(-10,10);
+            c = random(2,12);
+            f = random(1,13);
+
+            switch(random(0,2)){
+              
+              // x^3 +bx^2 +cx
+              case 0:
+              output = scramblePoly(0,1,(b+d),(b*d),0,zero,var1);
+              answer = "\\(\\Big\\{0, "+(-1*b)+", "+(-1*d)+"\\Big\\}\\)"; 
+              break;
+
+              // GCF with trinomial
+              case 1:
+              output = scrambleQuad(c,c*(b+d),(c*b*d),zero,var1);
+              answer = "\\(\\Big\\{"+(-1*b)+", "+(-1*d)+"\\Big\\}\\)"; 
+              break;
+
+              // perfect squares with GCF
+              case 2:
+              output = scrambleQuad(c,0,(-1*f*f*c),zero,var1);
+              answer = "\\(\\Big\\{"+(-1*f)+", "+f+"\\Big\\}\\)";
+              break;            
+
+            }
+
+          break;  
+
+          // Factoring 4th degree trinomial
+          case 7:
+
+            b = non_zero_random(-10,10);
+            d = non_zero_random(-10,10);
+            c = random(2,12);
+            f = random(1,13);
+
+            var answer = "("+var1+"^2 + "+b+")("+var1+"^2 + "+d+")";
+            output = var1+"^4";
+            e = b+d;
+            if(e != 0){output+= " + "+e+var1+"^2";}
+            else{diffOfTwoSquares = true;}
+            output+= " + "+(b*d);
+
+            var isBsquare = false;
+            var answer2 = "";
+            // check to see if either factor is a difference of squares
+            if(isPerfectSquare(Math.abs(b))&& b<0){
+              isBsquare = true;
+              var sqrtB = Math.sqrt(Math.abs(b));
+              answer2 += "("+var1+" + "+sqrtB+")("+var1+" - "+sqrtB+")";
+           }
+
+            if(isPerfectSquare(Math.abs(d)) && d < 0){
+
+              if(!isBsquare){ answer2 += "("+var1+"^2 + "+b+")";}
+              var sqrtD = Math.sqrt(Math.abs(d));
+              answer2 += "("+var1+" + "+sqrtD+")("+var1+" - "+sqrtD+")";
+            }else{
+
+                if(isBsquare){
+
+                   answer2 += "("+var1+"^2 + "+d+")"; 
+
+                }
+
+              }
+
+              if(answer2 != ""){ answer = answer2;}
+
+              answer = "\\("+clean(answer)+"\\)"; 
+
+          break; 
+
 
           /** taken out with next gen standards
            // Factoring Trinomials A not 1
@@ -562,6 +642,149 @@
        return output;
        
     }
+
+    // function to "scramble" a 4th degree equation
+    function scramblePoly(d,e,a,b,c,zero,variable){
+       
+       var output = "";
+       
+       // if the slider is set to always be equal to zero, return that format
+       if(zero){
+          
+          if(d != 1 && d != 0 ){ output += d; }
+          if(d != 0){ output += variable+"^4"; }
+          
+          if(e != 0){ 
+            if(d != 0){ output += " + ";}
+            if(e != 1){ output += e;}
+            output += variable+"^3";    
+          }
+
+          if(a != 0){ output += " + "+a+variable+"^2"; }
+
+          if(b != 0){ output += " + "+b+variable; }
+
+          if(c != 0){ output += " + "+c}
+
+          output += " = 0";
+          
+       }
+       
+       // if the slider is NOT set to always be equal to zero, scramble
+       else{
+            var left = { "a": a, "b": b, "c": c , "d": d, "e":e};
+            var right = { "a": 0, "b": 0, "c": 0 ,"d": 0,"e": 0  };
+            
+            // scramble 1: Add a constant to both sides [2/5 of the time perform this scramble]
+            if(spinner(2,5)){ 
+            
+               var scram1 = scramble1(left,right);
+               left = scram1[0]; right = scram1[1];
+            
+            }
+           
+            // scramble 2: Add an x term to both sides
+            if(spinner(2,5)){ 
+            
+              var scram2 = scramble2(left,right);
+              left = scram2[0]; right = scram2[1];
+              
+            }
+            
+            // scramble 3: Add an x^2 term to both sides
+            if(spinner(2,5)){ 
+            
+              var scram3 = scramble3(left,right);
+              left = scram3[0]; right = scram3[1];
+              
+            }
+            
+            // scramble 4: Make the whole thing negative 
+            if(spinner(2,5)){ 
+            
+              var scram4 = scramble4P(left,right);
+              left = scram4[0]; right = scram4[1];
+              
+            }
+
+            // scramble 5: Add x^3 term to both sides
+            if(spinner(2,5)){ 
+            
+              var scram5 = scramble5(left,right);
+              left = scram5[0]; right = scram5[1];
+              
+            }
+
+            // scramble 6: Add x^4 term to both sides
+            if(spinner(2,5)){ 
+            
+              var scram6 = scramble6(left,right);
+              left = scram6[0]; right = scram6[1];
+              
+            }
+            
+            // left side
+            var leftSide = [];
+            
+            // build the output
+            if(left.d != 0){ if(left.d != 1){ leftSide.push(left.d+variable+"^4"); } else{  leftSide.push(variable+"^4"); }; }
+
+            if(left.e != 0){ if(left.e != 1){ leftSide.push(left.e+variable+"^3"); } else{  leftSide.push(variable+"^3"); }; }
+
+            if(left.a != 0){ if(left.a != 1){ leftSide.push(left.a+variable+"^2"); } else{  leftSide.push(variable+"^2"); }; }
+            
+            if(left.b != 0){ leftSide.push(left.b+variable); }
+          
+            if(left.c != 0){ leftSide.push(left.c); }
+          
+            // right side
+            var rightSide = [];
+            
+            // build the output
+            if(right.d != 0){ if(right.d != 1){ rightSide.push(right.d+variable+"^4"); } else{  rightSide.push(variable+"^4"); }; }
+            
+            if(right.e != 0){ if(right.e != 1){ rightSide.push(right.e+variable+"^3"); } else{  rightSide.push(variable+"^3"); }; }
+
+            if(right.a != 0){ if(right.a != 1){ rightSide.push(right.a+variable+"^2"); } else{  rightSide.push(variable+"^2"); }; }
+
+            if(right.b != 0){ rightSide.push(right.b+variable); }
+          
+            if(right.c != 0){ rightSide.push(right.c); }
+            
+            output = equationSwap(mix(leftSide),mix(rightSide));
+            
+       }
+       
+       return output;
+       
+    }
+    
+   // helper function to scramble by adding a x^4 to both sides
+    function scramble6(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        var change = non_zero_random(-10,10);
+        left.d += change;
+        right.d += change;
+        
+        return [left,right];
+
+    }
+
+    // helper function to scramble by adding a x^3 to both sides
+    function scramble5(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        var change = non_zero_random(-10,10);
+        left.e += change;
+        right.e += change;
+        
+        return [left,right];
+
+    }
+
     
     // helper function to scramble by adding a constant to both sides
     function scramble1(leftSide,rightSide){
@@ -612,6 +835,38 @@
         
         return [left,right];
 
+    }
+
+    // helper function to scramble by multiplying both sides by -1
+    function scramble4P(leftSide,rightSide){
+        
+        var left = leftSide;
+        var right = rightSide;
+        left.a = left.a*-1; left.b = left.b*-1; left.c = left.c*-1;left.d = left.d*-1;left.e = left.e*-1;
+        right.a = right.a*-1; right.b = right.b*-1; right.c = right.c*-1;right.d = right.d*-1; right.e = right.e*-1;
+        
+        return [left,right];
+
+    }
+
+   // JavaScript program to find if x is a
+// perfect square.
+ 
+function isPerfectSquare(x)
+    {
+        if (x >= 0) {
+            
+            // Find floating point value of
+            // square root of x.
+            let sr = Math.sqrt(x);
+            
+            // if product of square root
+            // is equal, then
+            // return T/F
+  
+            return ((sr * sr) == x);
+        }
+        return false;
     }
 
     function pickVar() {
