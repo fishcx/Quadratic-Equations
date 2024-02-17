@@ -156,15 +156,61 @@
 		   
            // Square Roots
            case 3: 
+           var end = 1; 
+           if(complex){end = 2;}
+
+           switch(random(0,end)){
+            // integer answers
+            case 0:
+             a = random(2,10);
+             b = a*-1;
+             c = non_zero_random(-10,10);
+             d = non_zero_random(-10,10); 
+             e = a*a;
+             output = scrambleQuad(c,0,-1*c*e,zero,var1);                     
+             answer += "\\(\\Big\\{"+b+", "+a+"\\Big\\}\\)";
+             break;
+
+             // irrational answers
+             case 1:
+             a = random(2,10);
+             if(random(0,1) == 1){ b = Math.pow(random(2,12),2); }else{ b = random(8,30);}
+             output = scrambleQuad(a,0,-1*a*b,zero,var1);
+             answer += "\\(\\Big\\{ ";
+             if(!Number.isInteger(Math.sqrt(b))){
            
-           a = random(2,10);
-           b = a*-1;
-           c = non_zero_random(-10,10);
-           d = non_zero_random(-10,10); 
-           e = a*a;
+             answer += " \\pm "+simplifyRad(b);
            
-           output = scrambleQuad(c,0,-1*c*e,zero,var1);                     
-           answer += "\\(\\Big\\{"+b+", "+a+"\\Big\\}\\)"
+            } else{
+
+             answer += (-1*Math.sqrt(b))+", "+Math.sqrt(b)+"";
+              
+            }
+            answer += "\\Big\\}\\)"
+            answer = clean(answer);
+
+             break;
+
+             // complex answers
+             case 2:
+             a = random(2,10);
+             if(random(0,1) == 1){ b = Math.pow(random(2,12),2); }else{ b = random(8,30);}
+             output = scrambleQuad(a,0,a*b,zero,var1);
+             answer += "\\(\\Big\\{ ";
+             if(!Number.isInteger(Math.sqrt(b))){
+           
+             answer += " \\pm "+simplifyRad(b)+"i";
+           
+            } else{
+
+             answer += (-1*Math.sqrt(b))+"i , "+Math.sqrt(b)+"i";
+              
+            }
+            answer += "\\Big\\}\\)"
+            answer = clean(answer);
+
+             break;
+           }
            
            break;
            
