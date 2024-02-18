@@ -264,7 +264,6 @@
            
            // Quadratic Formula
            case 5: 
-           
            // if only reals are selected, generate a,b,c until it is not imaginary
            if(complex != true){
             do{
@@ -329,19 +328,22 @@
               // x^3 +bx^2 +cx
               case 0:
               output = scramblePoly(0,1,(b+d),(b*d),0,zero,var1);
-              answer = "\\(\\Big\\{0, "+(-1*b)+", "+(-1*d)+"\\Big\\}\\)"; 
+              answer += "\\("+clean(var1+"("+var1+" + "+b+")("+var1+" + "+d+")")+"=0\\)<br>";
+              answer += "\\(\\Big\\{0, "+(-1*b)+", "+(-1*d)+"\\Big\\}\\)"; 
               break;
 
               // GCF with trinomial
               case 1:
               output = scrambleQuad(c,c*(b+d),(c*b*d),zero,var1);
-              answer = "\\(\\Big\\{"+(-1*b)+", "+(-1*d)+"\\Big\\}\\)"; 
+              answer += "\\("+clean(c+"("+var1+" + "+b+")("+var1+" + "+d+")")+"=0\\)<br>";
+              answer += "\\(\\Big\\{"+(-1*b)+", "+(-1*d)+"\\Big\\}\\)"; 
               break;
 
               // perfect squares with GCF
               case 2:
               output = scrambleQuad(c,0,(-1*f*f*c),zero,var1);
-              answer = "\\(\\Big\\{"+(-1*f)+", "+f+"\\Big\\}\\)";
+              answer += "\\("+clean(c+"("+var1+" + "+f+")("+var1+" - "+f+")")+"=0\\)<br>";
+              answer += "\\(\\Big\\{"+(-1*f)+", "+f+"\\Big\\}\\)";
               break;            
 
             }
@@ -352,44 +354,68 @@
           case 7:
 
             b = non_zero_random(-10,10);
-            d = non_zero_random(-10,10);
+            do{d = non_zero_random(-10,10);} while(b==d);
             c = random(2,12);
             f = random(1,13);
 
-            var answer = "("+var1+"^2 + "+b+")("+var1+"^2 + "+d+")";
-            output = var1+"^4";
-            e = b+d;
-            if(e != 0){output+= " + "+e+var1+"^2";}
-            else{diffOfTwoSquares = true;}
-            output+= " + "+(b*d);
-
-            var isBsquare = false;
-            var answer2 = "";
+            answer += "\\("+clean("("+var1+"^2 + "+b+")("+var1+"^2 + "+d+")")+"=0\\)";
+            
+            output = scramblePoly(1,0,(b+d),0,(b*d),zero,var1);
+            var ans2 = "";
+            var onlyComplex = false;
             // check to see if either factor is a difference of squares
             if(isPerfectSquare(Math.abs(b))&& b<0){
-              isBsquare = true;
               var sqrtB = Math.sqrt(Math.abs(b));
-              answer2 += "("+var1+" + "+sqrtB+")("+var1+" - "+sqrtB+")";
+              ans2 += (-1)*sqrtB+" , "+sqrtB;
+            }
+           // not a perfect square but b <0 -> irrational but real
+           else if (b<0){
+
+              ans2 += "\\pm"+simplifyRad(Math.abs(b));
+
            }
+           // complex
+           else{
 
-            if(isPerfectSquare(Math.abs(d)) && d < 0){
+              if(complex){
 
-              if(!isBsquare){ answer2 += "("+var1+"^2 + "+b+")";}
-              var sqrtD = Math.sqrt(Math.abs(d));
-              answer2 += "("+var1+" + "+sqrtD+")("+var1+" - "+sqrtD+")";
-            }else{
+                ans2 += "\\pm"+simplifyRad(-1*b);
 
-                if(isBsquare){
+              }else{
 
-                   answer2 += "("+var1+"^2 + "+d+")"; 
-
-                }
+                onlyComplex = true;
 
               }
 
-              if(answer2 != ""){ answer = answer2;}
+           }
 
-              answer = "\\("+clean(answer)+"\\)"; 
+            if(isPerfectSquare(Math.abs(d)) && d < 0){
+              var sqrtD = Math.sqrt(Math.abs(d));
+              if(!onlyComplex){ans2 += " , ";}
+              ans2 += (-1)*sqrtD+" , "+sqrtD;
+              // reset onlyComplex to remove "no real solutions if needed";
+              onlyComplex = false;
+            }
+            // not a perfect square but  d<0 -> irrational but real
+           else if (d<0){
+
+              if(!onlyComplex){ans2 += " , ";}
+              ans2 += "\\pm"+simplifyRad(Math.abs(d));
+              onlyComplex = false;
+
+           }
+           // complex
+           else{
+
+              if(complex){
+                
+                ans2 += ", \\pm"+simplifyRad(-1*d);
+
+              }
+
+           }
+           if(onlyComplex){ answer += "<br>No real solutions";}
+           else { answer += "<br>\\(\\Big\\{"+clean(ans2)+"\\Big\\}\\)";} 
 
           break; 
 
@@ -478,7 +504,18 @@
 
     // simplify radical
     function simplifyRad(radicand){
-    
+
+          if(isPerfectSquare(Math.abs(radicand))){
+            var square = Math.sqrt(Math.abs(radicand));
+            if(radicand < 0 ){
+              return square+"i";
+            }
+            else{
+              return square;
+            }
+
+          }
+
            var isqr = Math.floor(Math.sqrt(Math.abs(radicand)));
            var isqr2 = isqr**2;
            var front = "";
@@ -854,19 +891,7 @@
  
 function isPerfectSquare(x)
     {
-        if (x >= 0) {
-            
-            // Find floating point value of
-            // square root of x.
-            let sr = Math.sqrt(x);
-            
-            // if product of square root
-            // is equal, then
-            // return T/F
-  
-            return ((sr * sr) == x);
-        }
-        return false;
+        return x > 0 && Math.sqrt(x) % 1 === 0;
     }
 
     function pickVar() {
