@@ -77,8 +77,19 @@
        var answer = "";
        var var1 = pickVar();
 
+         // Any Quad
+        if(type == 8){
+                      
+           // reset type to be any of the other methods
+           type = random(1,5);
+           
+           var n = ["Factoring out the GCF", "Factoring Trinomials", "Square Roots","Completing the Square","Quadratic Formula"];           
+           answer = n[type-1]+"<br>";                        
+        
+        } 
+
        // Any Method
-        if(type == 0){
+        else if(type == 0){
                       
            // reset type to be any of the other methods
            type = random(1,7);
