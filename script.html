@@ -34,7 +34,7 @@
         if($("#zero-toggle").is(':checked')){   zero = false; }
         
         
-        generate(parseInt($("#type").val()),complex,zero);   
+        generate($("#type").val(),complex,zero);   
         
      });
 
@@ -78,7 +78,7 @@
        var var1 = pickVar();
 
          // Any Quad
-        if(type == 8){
+        if(type == "anyQuad"){
                       
            // reset type to be any of the other methods
            type = random(1,5);
@@ -87,6 +87,14 @@
            answer = n[type-1]+"<br>";                        
         
         } 
+      
+      // any factoring
+      else if(type == "anyFact"){
+
+          var opts = [1,2,6,7]; // corresponding to the type values of the factoring options
+          type = opts[random(0,opts.length-1)];
+
+      }
 
        // Any Method
         else if(type == 0){
